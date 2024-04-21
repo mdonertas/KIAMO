@@ -83,8 +83,8 @@ shinyServer(function(input, output){
         mutate(SampleID = factor(SampleID, 
                                  levels = c('Young1', 'Young2', 'Old1', 'Old2', 'Old3')))
     } else if(length(scgenes)==1){
-      reshape2::melt(as.matrix(scdat@assays$RNA[scgenes,])) %>%
-        set_names('Gene', 'cell', 'Normalized Expression') %>%
+      reshape2::melt(as.matrix(scdat[['RNA']]$data[scgenes,])) %>%
+        set_names('cell', 'Gene', 'Normalized Expression') %>%
         left_join(metadata) %>%
         mutate(SampleID = setNames(c('Young1', 'Young2', 'Old1', 'Old2', 'Old3'),
                                    c('A', 'C', 'D', 'E', 'F'))[as.character(SampleID)]) %>%
