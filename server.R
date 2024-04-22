@@ -23,8 +23,10 @@ scdat <- readRDS('./data/allintegrated.rds')
 metadata <- readRDS('./data/sc_metadata.rds') %>%
   mutate(label2 = gsub('_cl','_cluster',label2))
 
-geneids <- readRDS('./data/geneids.rds') %>%
+allgeneids <- readRDS('./data/geneids.rds') %>%
   mutate(uppersym = toupper(external_gene_name))
+
+geneids <- allgeneids
 
 #### extra functions & setup ####
 
@@ -41,7 +43,7 @@ theme_set(theme_bw())
 
 #### server function ####
 
-shinyServer(function(input, output){
+shinyServer(function(input, output, session){
   
   #### check credentials ####
   res_auth <- secure_server(
@@ -49,6 +51,44 @@ shinyServer(function(input, output){
   )
   
   #### read gene, prep data ####
+  
+  observeEvent(input$filter, {
+    geneids <- allgeneids
+    if(nrow(geneids)!=0 & 'km_up' %in% input$filtervar){
+      geneids <- filter(km_wilcox, l2FC>0) %>%
+        inner_join(geneids) %>%
+        select(colnames(geneids)) 
+    }
+    if(nrow(geneids)!=0 & 'km_down' %in% input$filtervar){
+      geneids <- filter(km_wilcox, l2FC<0) %>%
+        inner_join(geneids) %>%
+        select(colnames(geneids)) 
+    }
+    if(nrow(geneids)!=0 & 'km_sig' %in% input$filtervar){
+      geneids <- filter(km_wilcox, padj<=0.05) %>%
+        inner_join(geneids) %>%
+        select(colnames(geneids)) 
+    }
+    if(nrow(geneids)!=0 & 'pl_up' %in% input$filtervar){
+      geneids <- filter(plasma_wilcox, l2FC>0) %>%
+        inner_join(geneids) %>%
+        select(colnames(geneids)) 
+    }
+    if(nrow(geneids)!=0 & 'pl_down' %in% input$filtervar){
+      geneids <- filter(plasma_wilcox, l2FC<0) %>%
+        inner_join(geneids) %>%
+        select(colnames(geneids)) 
+    }
+    if(nrow(geneids)!=0 & 'pl_sig' %in% input$filtervar){
+      geneids <- filter(plasma_wilcox, p<=0.05) %>%
+        inner_join(geneids) %>%
+        select(colnames(geneids)) 
+    }
+    updateSelectInput(session, "gene",
+                      label = 'Gene Symbol',
+                      choices = sort(geneids$displaygenes))
+  })
+  
   gene <- eventReactive(input$submit, input$gene)
   
   plasma_data <- eventReactive(input$submit, {
