@@ -113,10 +113,11 @@ shinyServer(function(input, output, session){
       scgenes <- grep(paste('^',scgene,sep=''),rownames(scdat@assays$RNA),v=T)
       } else {scgenes = c()}
     if(length(scgenes)>1){
-      xx = as.matrix(scdat@assays$RNA[scgenes,])
+      xx = as.matrix(scdat[['RNA']]$data[scgenes,])
       reshape2::melt(apply(xx,2,median)) %>% 
         set_names('Normalized Expression') %>%
         mutate(cell = colnames(xx)) %>%
+        mutate(Gene = scgene) %>%
         left_join(metadata) %>%
         mutate(SampleID = setNames(c('Young1', 'Young2', 'Old1', 'Old2', 'Old3'),
                                    c('A', 'C', 'D', 'E', 'F'))[as.character(SampleID)]) %>%
@@ -230,7 +231,9 @@ shinyServer(function(input, output, session){
         theme(axis.text.x = element_text(angle = 30, hjust = 1)) +
         ggtitle('Kidney Marrow scRNAseq')
       
-    } 
+    } else { 
+      return(plot_error(paste(gene(),'\nis not found in\nkidney marrow scRNAseq.'))) 
+    }
   }
   )
   
