@@ -7,7 +7,7 @@ To allow multi-omics comparison of plasma proteomics, head kidney proteomics, an
 
 **Use Case Example:** For instance, a researcher interested in identifying biomarkers of immune aging can use KIAMO to choose proteins with increased abundance in older plasma and head kidney tissues and to correlate these findings with single-cell RNA sequencing data from the same tissues.
 
-For more detailed information and to explore the platform's features, please visit the [KIAMO Wiki](https://github.com/mdonertas/KIAMO/wiki).
+For more detailed information, detailed use cases, and to explore the platform's features, please visit the [KIAMO Wiki](https://github.com/mdonertas/KIAMO/wiki).
 
 Data exploration tool accompanying [Morabito et al.](https://www.biorxiv.org/content/10.1101/2023.02.06.527346v3) manuscript on ageing of the immune system in killifish.  
 
